@@ -1,0 +1,365 @@
+\documentclass{beamer}
+
+\mode<presentation>{
+\usetheme{Dresden}
+\setbeamercovered{transparent}
+\usecolortheme{lsc}
+}
+
+\mode<handout>{
+  % tema simples para ser impresso
+  \usepackage[bar]{beamerthemetree}
+  % Colocando um fundo cinza quando for gerar transparências para serem impressas
+  % mais de uma transparência por página
+  \beamertemplatesolidbackgroundcolor{black!5}
+}
+
+\usepackage{amsmath,amssymb}
+\usepackage[brazil]{varioref}
+\usepackage[english,brazil]{babel}
+\usepackage[utf8]{inputenc}
+%\usepackage[latin1]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{colortbl}
+
+\beamertemplatetransparentcovereddynamic
+
+%add number of pages - START
+\newcommand{\frameofframes}{/}
+\newcommand{\setframeofframes}[1]{\renewcommand{\frameofframes}{#1}}
+
+\setframeofframes{de}
+\makeatletter
+\setbeamertemplate{footline}
+  {%
+    \begin{beamercolorbox}[colsep=1.5pt]{upper separation line foot}
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{author in head/foot}%
+      \leavevmode{\usebeamerfont{author in head/foot}\insertshortauthor}%
+      \hfill%
+      {\usebeamerfont{institute in head/foot}\usebeamercolor[fg]{institute in head/foot}\insertshortinstitute}%
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[ht=2.5ex,dp=1.125ex,%
+      leftskip=.3cm,rightskip=.3cm plus1fil]{title in head/foot}%
+      {\usebeamerfont{title in head/foot}\insertshorttitle}%
+      \hfill%
+      {\usebeamerfont{frame number}\usebeamercolor[fg]{frame number}\insertframenumber~\frameofframes~\inserttotalframenumber}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[colsep=1.5pt]{lower separation line foot}
+    \end{beamercolorbox}
+  }
+\makeatother
+%add number of pages - END
+
+\title[Análise de desempenho de aplicações java utilizando programação reativa sem bloqueio e tradicional com bloqueio
+]{\normalsize Análise de desempenho de aplicações java utilizando programação reativa sem bloqueio e tradicional com bloqueio
+}
+\author[Rafael Elias Ribeiro Barbosa]{%
+  Rafael Elias Ribeiro Barbosa\\
+  Orientador: D.Sc. Marum Simão Filho}
+  \institute[UNI7]{
+  %
+     Especialização em Arquitetura, Design e Implem. de Sistemas para Internet\\
+     Centro Universitário 7 de Setembro}
+
+% Se comentar a linha abaixo, irá aparecer a data quando foi compilada a apresentação  
+\date{10 de Outubro de 2018}
+
+\pgfdeclareimage[height=1cm]{inf}{figs/uni7-logo.png}
+
+% pode-se colocar o LOGO assim
+\logo{\pgfuseimage{inf}}
+
+\AtBeginSection[]{
+  \begin{frame}<beamer>
+    \frametitle{Roteiro}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Roteiro}
+\tableofcontents
+\end{frame}
+
+
+\section{Introdução}
+\frame{
+    \frametitle{Introdução}
+      \begin{itemize}
+         \item Programção reativa
+         \item Otimizar a utilização do \textit{hardware}
+         
+      \end{itemize}
+}
+
+\frame{
+    \frametitle{Justificativa e Objetivos}
+    \begin{itemize}   
+       \item Justificativa
+       \begin{itemize}
+           \item Suporte nativo a programação reativa: Java 9 e Spring 5
+       \end{itemize}
+       
+       \item Objetivos
+       \begin{itemize}
+       	   \item Geral
+       	   \begin{itemize}    
+       	        \item Comparação entre dois paradigmas de programação, em relação à performance
+       	   \end{itemize}  
+       	   
+       	   \item Específicos 
+       	   \begin{itemize} 
+       	        \item Discutir os conceitos de programação reativa
+       	        \item Fornecer exemplo de implementação
+       	        \item Analisar a performance das aplicações
+       	   \end{itemize}  
+       \end{itemize}
+   \end{itemize}
+}
+
+
+\section{Fundamentação}
+
+\pgfdeclareimage[height=2.5cm]{depGreph}{figs/dependency-graph.png}%
+\frame{
+	\frametitle{Programação Reativa}
+	\begin{itemize}
+	    \item Paradigma declarativo
+        \item \textit{o que fazer} e \textit{quando fazer}
+	\end{itemize}
+	\begin{columns}
+        \column{4cm}
+            {\fontfamily{qcr}\selectfont
+                \textbf{int} x = 1; \\
+            	\textbf{int} y = 2; \\
+            	\textbf{int} sum = x + y;
+            }
+		\column{5cm}
+		    \\
+			\pgfuseimage{depGreph}
+			\center
+			\begin{tiny}
+                Fonte: Bainomugisha et al. (2013)
+            \end{tiny}
+    \end{columns}
+}
+
+\frame{
+	\frametitle{Modelos de Avalição (Evaluation model)}
+	\begin{itemize}
+		\item Quem é o responsável pela a propagação das alterações?
+		\item Modelo \textit{push}
+		    \begin{itemize}
+		        \item \textit{publish-subscribe}
+		    \end{itemize}
+		\item Modelo \textit{pull}
+		
+	\end{itemize}
+}
+
+\frame{
+	\frametitle{Reactive Streams}
+	\begin{itemize}
+		\item Especificação para implementações que estejam em conformidade com os princípios da programação reativa
+		    \begin{itemize}
+		        \item fluxos assíncronos com \textit{back pressure non-blocking}
+		    \end{itemize}
+		\item Modelo \textit{push (publish-subscribe)}
+		\item Java 9 \textbf{java.util.current.Flow}
+		\item Project Reactor (Spring 5)
+		
+	\end{itemize}
+}
+
+\section{Desenvolvimento}
+\frame{
+    \frametitle{Aplicações}
+    \begin{columns}
+        \column{4cm}
+            \begin{itemize}
+        		\item \textbf{Reativa:} \\
+        		- Java 8 \\
+		        - Spring 5 WebFlux \\
+		        - Netty
+        	\end{itemize}
+        \column{4cm}
+            \begin{itemize}
+        		\item \textbf{Tradicional:} \\
+        		- Java 8 \\
+		        - Spring 5 MVC \\
+		        - Tomcat
+        	\end{itemize}
+    \end{columns}
+}
+
+\pgfdeclareimage[height=1cm]{mongo}{figs/mongoDB.png}%
+\pgfdeclareimage[height=1.5cm]{mysql}{figs/mysql.png}%
+\frame{
+    \frametitle{Bancos de dados}
+        \begin{columns}
+            \column{6.5cm}
+                \begin{itemize}
+            		\item Reativa:
+        	        \pgfuseimage{mongo}
+        	        
+            		\item Tradicional:
+        	        \pgfuseimage{mysql}
+            	\end{itemize}
+        	
+        	\column{3cm}
+            	\begin{table}
+        		\renewcommand{\figurename}{Table}
+        		\centering
+        		\begin{tabular}{|l|}
+        		    \hline
+        		    \multicolumn{1}{|c|}{\textbf{User}} \\
+        			\hline 
+        			    id: Long \\ 
+        			\hline 
+        			    name: String \\ 
+        			\hline 
+        			    age: Long \\
+        			\hline
+        		\end{tabular}
+        	\end{table}
+    	\end{columns}
+}
+
+\pgfdeclareimage[height=1.3cm]{docker}{figs/docker.png}%
+\frame{
+    \frametitle{Ambiente de simulação}
+    \pgfuseimage{docker} \\
+    \begin{itemize}
+        \item Processador Intel Core i7-4790 com 3.60GHz 
+		\item Sistema operacional: Boot2Docker 18.06.0-ce \item Tipo do sistema operacional: Linux 
+		\item Arquitetura: x86\_64 
+		\item CPUs: 4 
+		\item Memoria: 1.955GiB 
+    \end{itemize}
+}
+
+\pgfdeclareimage[height=1.3cm]{gatling}{figs/gatling.jpg}%
+\frame{
+    \frametitle{Ferramenta de testes}
+    
+	\pgfuseimage{gatling} \\
+    \begin{itemize}
+        \item Ferramenta de testes de performance \\ 
+    \end{itemize}
+}
+
+\section{Resultados e Discussão}
+\frame{
+	\frametitle{Configuração dos experimentos}
+	
+	\begin{itemize}
+		\item Os resultados foram separados em 2 etapas, considerando o volume de registros:
+    		\begin{itemize}
+    		    \item 1000 registros
+    		    \item 2000 registros
+    		\end{itemize}
+    		
+    	\item Em cada uma das etapas, foram realizadas três cargas de testes:
+    	    \begin{itemize}
+    		    \item 100 usuários
+    		    \item 1000 usuários
+    		    \item 2000 usuários
+    		\end{itemize}
+	\end{itemize}
+}
+
+\pgfdeclareimage[height=3.5cm]{1000-100}{figs/chart1000-100u.png}%
+\pgfdeclareimage[height=3.5cm]{1000-2000}{figs/chart1000-2000u.png}%
+\frame{
+	\frametitle{Resultados}
+    	\begin{columns}
+            \column{\dimexpr\paperwidth-178pt}
+                \center
+                \begin{footnotesize}
+                    1000 registros - 100 usuários
+                \end{footnotesize}
+                \pgfuseimage{1000-100}
+                
+            \column{\dimexpr\paperwidth-178pt}
+                \center
+                \begin{footnotesize}
+                     1000 registros - 2000 usuários
+                \end{footnotesize}
+                \pgfuseimage{1000-2000}
+                
+    	\end{columns}
+}
+
+
+\pgfdeclareimage[height=3.5cm]{2000-100}{figs/chart2000-100u.png}%
+\pgfdeclareimage[height=3.5cm]{2000-2000}{figs/chart2000-2000u.png}%
+\frame{
+	\frametitle{Resultados (Continuação)}
+    	\begin{columns}
+            \column{\dimexpr\paperwidth-178pt}
+                \center
+                \begin{footnotesize}
+                    2000 registros - 100 usuários
+                \end{footnotesize}
+                \pgfuseimage{2000-100}
+
+            \column{\dimexpr\paperwidth-178pt}
+                \center
+                \begin{footnotesize}
+                     2000 registros - 2000 usuários
+                \end{footnotesize}
+                \pgfuseimage{2000-2000}
+                
+    	\end{columns}
+}
+
+\section{Conclusão}
+
+\pgfdeclareimage[height=5cm]{resumo}{figs/resumo-resultados.png}%
+\frame{
+   \frametitle{Resumo dos resultados}
+   \center
+   \pgfuseimage{resumo}
+}
+
+\frame{
+   \frametitle{Dificuldades encontradas}
+   \begin{itemize}
+        \item Tradicional
+        \begin{itemize}
+            \item j.u.c.TimeoutException: Request timeout to /192.168.99.100:8080 after 60000 ms
+        \end{itemize}
+        
+        \item Reativa
+        \begin{itemize}
+            \item Too many threads are already waiting for a connection. Max number of threads (maxWaitQueueSize) of 500 has been exceeded
+        \end{itemize}
+   \end{itemize}
+}
+
+\logo{\pgfuseimage{inf}}
+\frame{
+   \frametitle{Trabalhos Futuros}
+   	\begin{itemize}
+   		\item Realizar outras comparações, dessa vez, considerando aspectos como o consumo de memória, a utilização da CPU e a utilização da rede
+        \item Realizar as mesmas comparações mas com o mesmo banco de dados e mesmo servidor, para ambas as aplicações
+        \item Verificar o desempenho em relação a aplicações feitas em outras linguagens que também têm suporte à programação reativa, como Javascript
+   	\end{itemize}
+}
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\end{document}
