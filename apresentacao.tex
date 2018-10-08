@@ -23,6 +23,7 @@
 \usepackage{listings}
 \usepackage{url}
 \usepackage{colortbl}
+\usepackage{setspace}
 
 \beamertemplatetransparentcovereddynamic
 
@@ -147,6 +148,10 @@
             }
 		\column{5cm}
 		    \\
+		    \center
+		    \begin{footnotesize}
+		        Gráfico de dependência
+		    \end{footnotesize}
 			\pgfuseimage{depGreph}
 			\center
 			\begin{tiny}
@@ -187,6 +192,11 @@
 		\item Sistemas reativos
 	\end{itemize}
 	\center
+	\begin{spacing}{1.3}
+    	\begin{footnotesize}
+            Características de Sistemas Reativos
+        \end{footnotesize}
+    \end{spacing}
 	\pgfuseimage{rectTraits}
 	\center
 	\begin{tiny}
@@ -302,6 +312,10 @@
                     1000 registros - 100 usuários
                 \end{footnotesize}
                 \pgfuseimage{1000-100}
+                \begin{scriptsize}
+                    Tradicional: 324.967 Req/s: \\
+                    Reativo: 304.878 Req/s
+                \end{scriptsize}
                 
             \column{\dimexpr\paperwidth-178pt}
                 \center
@@ -309,6 +323,10 @@
                      1000 registros - 2000 usuários
                 \end{footnotesize}
                 \pgfuseimage{1000-2000}
+                \begin{scriptsize}
+                    Tradicional: 300.480 Req/s: \\
+                    Reativo: 300.752 Req/s
+                \end{scriptsize}
                 
     	\end{columns}
 }
@@ -325,6 +343,10 @@
                     2000 registros - 100 usuários
                 \end{footnotesize}
                 \pgfuseimage{2000-100}
+                \begin{scriptsize}
+                    Tradicional: 185.185 Req/s: \\
+                    Reativo: 175.439 Req/s
+                \end{scriptsize}
 
             \column{\dimexpr\paperwidth-178pt}
                 \center
@@ -332,6 +354,10 @@
                      2000 registros - 2000 usuários
                 \end{footnotesize}
                 \pgfuseimage{2000-2000}
+                \begin{scriptsize}
+                    Tradicional: 178.171 Req/s: \\
+                    Reativo: 180.180 Req/s
+                \end{scriptsize}
                 
     	\end{columns}
 }
